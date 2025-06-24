@@ -11,7 +11,7 @@ export default function Page() {
             <RegisterForm />
             <div className="mt-8 text-center">
                 <p className="text-gray-400 text-sm">
-                    You already have account?{' '}
+                    You already have account?
                     <a
                         href="/auth/sign-in"
                         className="text-[#FF6B6B] font-semibold"
