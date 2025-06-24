@@ -33,8 +33,7 @@ const handler = NextAuth({
                 client_id: process.env.AUTH0_CLIENT_ID,
                 client_secret: process.env.AUTH0_CLIENT_SECRET,
                 scope: "openid email offline_access",
-                realm:"Username-Password-Authentication",
-
+                realm: "Username-Password-Authentication",
               }),
             }
           );
@@ -57,10 +56,12 @@ const handler = NextAuth({
 
           const profile = await userInfo.json();
 
+          // Burada mutlaka role ekle, örneğin user olarak:
           return {
             id: profile.sub,
             email: profile.email,
             name: profile.name,
+            role: profile.role, // ya da burayı profil bilgilerine göre ayarla
           };
         } catch (error) {
           console.error("Error:", error);
@@ -69,9 +70,36 @@ const handler = NextAuth({
       },
     }),
   ],
+
+  pages: {
+    signIn: "/auth/sign-in",
+    error: "/auth/sign-in", // opsiyonel, hata sayfası
+  },
+
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        console.log(user);
+        
+        // İlk login’de user objesinden rolü token içine ekle
+        token.role = user.role 
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      // Client tarafına session içine rolü ekle
+      if (session.user) {
+        session.user.role = token.role;
+      }
+      return session;
+    },
+  },
+
   session: {
     strategy: "jwt",
   },
+
   secret: process.env.NEXTAUTH_SECRET,
 });
 
