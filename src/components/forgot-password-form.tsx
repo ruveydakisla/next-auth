@@ -18,13 +18,14 @@ export default function ForgotPasswordForm() {
         setError(null);
 
         try {
-            const res = await changePasswordWithAuth0(values.email);
-
-            console.log(res);
-
+             await changePasswordWithAuth0(values.email);
             setMessage('Password reset email sent. Please check your inbox.');
-        } catch (err: any) {
-            setError(err.message || 'An unexpected error occurred.');
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An unexpected error occurred.');
+            }
         }
 
         setSubmitting(false);
